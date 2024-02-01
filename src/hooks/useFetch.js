@@ -12,7 +12,7 @@ export default function useFetch(fetchFn, initialValue){
                 setFetchedData(data);
             }
             catch(error){
-                setError(prevErrors => (error.message || 'Error connecting to data.'));
+                setError(prevErrors => (error ?? 'Error connecting to data.'));
                 setIsFetching(false);
             }
             setIsFetching(false);

@@ -1,11 +1,21 @@
 import useFetch from '../hooks/useFetch.js';
 import { fetchMeals } from '../http.js';
-// import { useState } from 'react';
 
-export default function Meals({ handleSelectedMeals }){
-    
-    // Previously: useFetch('meals', setMeals, setError, setIsLoading); // However causes re-render/duplicate fetched data
+export default function Meals({ handleCustomerMeals }){
     const {isFetching: isLoading, error, fetchedData: meals} = useFetch(fetchMeals, []);
+    
+    function selectMeal(meal){
+        handleCustomerMeals(prevMeal => ({
+            ...prevMeal,
+            [meal.id]: { 
+                name: meal.name,
+                quantity: prevMeal[meal.id] === undefined
+                    ? 1
+                    : prevMeal[meal.id]["quantity"] + 1,
+                price: parseFloat(meal.price)
+            }
+        }));
+    }
     
     return (
         <div id="meals">
@@ -14,7 +24,7 @@ export default function Meals({ handleSelectedMeals }){
             { !isLoading && !error && meals.map(meal => {
                 return (
                     <div key={meal.id} className="meal-item">
-                        <article className>
+                        <article>
                             <img src={`http://localhost:3000/${meal.image}`} alt={meal.name} />
                             <h3>{meal.name}</h3>
                             <section className="meal-item-actions">
@@ -22,10 +32,7 @@ export default function Meals({ handleSelectedMeals }){
                                 <p className="meal-item-description">{meal.description}</p>
                                 <button
                                     className="button"
-                                    onClick={ () => handleSelectedMeals(prevMeal => [
-                                        ...prevMeal,
-                                        meal.name]
-                                    )}
+                                    onClick={ () => selectMeal(meal)}
                                     >Add to Cart</button>
                             </section>
                         </article>
